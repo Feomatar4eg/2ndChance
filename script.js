@@ -1,40 +1,27 @@
 'use strict';
 /*
-1) Весь функционал что был ранее оставляем, если что то необходимо удалить,
- об этом будет написано в задании
-2) При присваивании уже объявленным пустым переменным какого-либо значения,
- значение переменной присваиваем сразу при декларации 
- (не нужно создавать пустую переменную а потом ей же присваивать значение)
-3) Спрашиваем у пользователя “Как называется ваш проект?” и результат сохраняем в переменную title
-4) Спросить у пользователя “Какие типы экранов нужно разработать?”
- сохранить в переменную screens (пример: "Простые, Сложные, Интерактивные")
-5) Спросить у пользователя “Сколько будет стоить данная работа?”
- и сохранить в переменную screenPrice (пример: 12000)
-6) Спросить у пользователя “Нужен ли адаптив на сайте?”
- и сохранить данные в переменной adaptive (булево значение true/false)
-7) Спросить у пользователя по 2 раза каждый вопрос и записать ответы
- в разные переменные 1. “Какой дополнительный тип услуги нужен?” (например service1, service2)
- 2. “Сколько это будет стоить?” (например servicePrice1, servicePrice2) в итоге 4 вопроса
- и 4 разные переменных, вопросы задаются в такой последовательности Название
- - Стоимость - Название - Стоимость
-8) Вычислить итоговую стоимость работы учитывая стоимость верстки экранов
- и дополнительных услуг (screenPrice + servicePrice1 + servicePrice2)
-  и результат занести в переменную fullPrice
-9) Объявить переменную servicePercentPrice и занести в нее итоговую стоимость
- за вычетом отката посреднику (servicePercentPrice = fullPrice - Откат посреднику),
-  округлив результат в большую сторону (методы объекта Math в помощь).
- Вывести servicePercentPrice в консоль.
-10) Написать конструкцию условий (расчеты приведены в рублях) 
-  - Если fullPrice больше 30000, то “Даем скидку в 10%” 
-  - Если fullPrice больше 15000 и меньше 30000, то сообщение “Даем скидку в 5%” 
-  - Если fullPrice меньше 15000 и больше 0 то в консоль вывести сообщение “Скидка не предусмотрена” 
-  - Если отрицательное значение то вывести “Что то пошло не так” 
-  - Учесть варианты 0, 15000 и 30000(к какому уровню не важно)
- Проверить, чтобы все работало и не было ошибок в консоли
- Добавить папку с третьим уроком в свой репозиторий на GitHub
+1) Объявить функцию getAllServicePrices. Функция возвращает сумму всех дополнительных услуг.
+ Результат сохраняем в переменную allServicePrices. Тип - function expression
+2) Объявить функцию getFullPrice. Функция возвращает сумму стоимости верстки
+ и стоимости дополнительных услуг (screenPrice + allServicePrices).
+  Результат сохраняем в переменную fullPrice. Тип - function declaration
+3) Объявить функцию getTitle. Функция возвращает title меняя его таким образом:
+ первый символ с большой буквы, остальные с маленькой". Учесть вариант что строка
+  может начинаться с пустых символов. " КаЛьКулятор Верстки"
+4) Объявить функцию getServicePercentPrices. Функция возвращает итоговую стоимость
+ за вычетом процента отката. Результат сохраняем в переменную servicePercentPrice
+  (итоговая стоимость минус сумма отката)
+5) Вывести в консоль строку из переменной screens в виде массива
+6) Почистить консоль логи и добавить недостающие, должны остаться:
+- вызовы функции showTypeOf
+- вывод строки с типами экранов для разработки screens
+- сообщение о скидке пользователю (вызовы функции getRollbackMessage)
+- стоимость за вычетом процента отката посреднику (вызовы функции getServicePercentPrices)
+6) Проверить, чтобы все работало и не было ошибок в консоли
+7) Добавить папку с четвертым уроком в свой репозиторий на GitHub
  */
 
-const title = prompt('Введите название проекта.', 'Калькулятор верстки.');
+let title = prompt('Введите название проекта.', '  кальКУЛЯТОр верстки.');
 const screens = prompt("“Какие типы экранов нужно разработать?", "Простые, Сложные, Интерактивные");
 const screenPrice = +prompt("Сколько будет стоить данная работа?", "12000");
 const adaptive = confirm("Нужен ли адаптив на сайте?");
@@ -42,26 +29,57 @@ const service1 = prompt("Какой дополнительный тип услу
 const servicePrice1 = +prompt("Сколько это будет стоить?", '2000');
 const service2 = prompt("Какой дополнительный тип услуги нужен?", "Гугл метрика");
 const servicePrice2 = +prompt("Сколько это будет стоить?", '2000');
+
 const rollback = 20;
 
-const fullPrice = screenPrice + servicePrice1 + servicePrice2;
-const servicePercentPrice = Math.round(fullPrice - (fullPrice * (rollback / 100)));
+let servicePercentPrice;
+let allServicePrices, fullPrice;
 
-if (fullPrice >= 30000) {
-    console.log('Даем скидку в 10%');
-} else if (fullPrice >= 15000) {
-    console.log('Даем скидку в 5%');
-} else if (fullPrice >= 0) {
-    console.log('Скидка не предусмотрена');
-} else {
-    console.log('что то пошло не так');
+const showTypeOf = function (variable) {
+    console.log(variable, typeof variable);
+};
+
+const getRollbackMsg = function (price) {
+    if (price >= 30000) {
+        return 'Даем скидку в 10%';
+    } else if (price >= 15000) {
+        return 'Даем скидку в 5%';
+    } else if (price >= 0) {
+        return 'Скидка не предусмотрена';
+    } else {
+        return 'что то пошло не так';
+    }
+};
+
+const getAllServicePrices = function (price1, price2) {
+    return price1 + price2;
+};
+
+function getFullPrice(scrPrice, servicesPrice) {
+    return scrPrice + servicesPrice;
 }
 
-console.log(typeof title);
-console.log(typeof fullPrice);
-console.log(typeof adaptive);
-console.log(screens.length);
+const getTitle = function (titleText) {
+    titleText = titleText.trim().toLowerCase();
+    titleText = titleText[0].toUpperCase() + titleText.slice(1);
+    return titleText;
+};
+
+const getServicePercentPrices = function (fullPrice, rollback) {
+    return Math.round(fullPrice - (fullPrice * (rollback / 100)));
+};
+
+allServicePrices = getAllServicePrices(servicePrice1, servicePrice2);
+fullPrice = getFullPrice(screenPrice, allServicePrices);
+servicePercentPrice = getServicePercentPrices(fullPrice, rollback);
+title = getTitle(title);
+
+showTypeOf(title);
+showTypeOf(fullPrice);
+showTypeOf(adaptive);
+console.log(getRollbackMsg(fullPrice));
 console.log('Стоимость верстки экранов ' + screenPrice + ' рублей');
 console.log('Стоимость разработки сайта ' + fullPrice + ' рублей');
 console.log(screens.toLocaleLowerCase().split(', '));
 console.log('Процент отката посреднику за работу ' + fullPrice * (rollback / 100));
+console.log('Мой заработок ' + servicePercentPrice);
