@@ -1,38 +1,47 @@
 'use strict';
 /*
 ЗАДАНИЕ:
-1) Перенести все функции в объект (сделать их методами объекта)
-2) Создать в объекте метод start и перенести в него вызов метода asking
- и переопределение свойств. Вне самого объекта запускаем только метод start
-  который в нужном порядке выполнит все действия.
-3) Создать в объекте метод logger который будет выводить в консоль необходимую
- информацию. Данный метод запускаем в самом конце метода start (после того как все
-     расчеты уже были произведены)
-4) Вывести в консоль из метода logger все свойства и методы объекта appData с помощью цикла for in
-Таким образом вне объекта теперь должен быть только вызов метода start( )
-Поправить весь проект, ошибок в консоли быть не должно, а в консоль должна
- выводится необходимая информация!
+1) Сделать проверку при получении данных:
+- ответ на вопрос "Как называется ваш проект?" - строка
+- ответ на вопрос "Какие типы экранов нужно разработать?" - строка
+- ответ на вопрос "Сколько будет стоить данная работа?" - число
+- ответ на вопрос "Какой дополнительный тип услуги нужен?" - строка
+- ответ на вопрос "Сколько это будет стоить?" - число
+Что значит проверка данных: где должен быть текст там только текст
+(голые цифры не должно пропускать, а текст с цифрами - должно. 
+    Пример: "Купил ВАЗ 2108" - ок, "4567989" - нет), где цифры только цифры!
+Если проверку не прошло, то переспрашивать
+2) Проверить, чтобы все работало и не было ошибок в консоли
+3) Добавить папку с уроком на свой GitHub
 
 */
 const appData = {
     title: '',
-    screens: '',
+    screens: [],
     screenPrice: 0,
     adaptive: true,
     rollback: 10,
     allServicePrices: 0,
     fullPrice: 0,
     servicePercentPrice: 0,
-    service1: '',
-    service2: '',
+    services: {},
+    start: function () {
+        appData.asking();
+        appData.screenPriceMath();
+        appData.getAllServicePrices();
+        appData.getFullPrice();
+        appData.getServicePercentPrices();
+        appData.getTitle();
+        appData.logger();
+    },
     isNumber: function (num) {
         return !isNaN(parseFloat(num)) && isFinite(num);
     },
     getServicePercentPrices: function () {
-        return Math.round(appData.fullPrice - (appData.fullPrice * (appData.rollback / 100)));
+        appData.servicePercentPrice = Math.round(appData.fullPrice - (appData.fullPrice * (appData.rollback / 100)));
     },
     getFullPrice: function () {
-        return appData.screenPrice + appData.allServicePrices;
+        appData.fullPrice = appData.screenPrice + appData.allServicePrices;
     },
     getRollbackMsg: function (price) {
         if (price >= 30000) {
@@ -46,40 +55,55 @@ const appData = {
         }
     },
     getAllServicePrices: function () {
-        let sum = 0;
-        let i = 0;
-        let servicePrice;
-        do {
-            if (i === 0) {
-                appData.service1 = prompt("Какой дополнительный тип услуги нужен?", "Яндекс метрика");
-            } else if (i === 1) {
-                appData.service2 = prompt("Какой дополнительный тип услуги нужен?", "Гугл метрика");
-            }
-            servicePrice = prompt("Сколько это будет стоить?", '2000');
-            while (!appData.isNumber(servicePrice)) {
-                servicePrice = prompt("Сколько это будет стоить?", '2000');
-            }
-            sum += Number(servicePrice);
-            i++;
+        for (let key in appData.services) {
+            appData.allServicePrices += +appData.services[key];
         }
-        while (i < 2);
-        return sum;
     },
     getTitle: function () {
         appData.title = appData.title.trim().toLowerCase();
         appData.title = appData.title[0].toUpperCase() + appData.title.slice(1);
-        return appData.title;
+        appData.title = appData.title;
     },
     asking: function () {
-
-        appData.title = prompt('Введите название проекта.', '  кальКУЛЯТОр верстки.');
-        appData.screens = prompt("Какие типы экранов нужно разработать?", "Простые, Сложные, Интерактивные");
+        let i = 0;
         do {
-            appData.screenPrice = prompt("Сколько будет стоить данная работа?", "12000");
-        } while (!appData.isNumber(appData.screenPrice));
-        appData.screenPrice = Number(appData.screenPrice);
+            appData.title = prompt('Введите название проекта.', '  кальКУЛЯТОр верстки.');
+        } while (appData.isNumber(appData.title));
         appData.adaptive = confirm("Нужен ли адаптив на сайте?");
+        for (let i = 0; i < 2; i++) {
+            let price = 0;
+            let name;
+            do {
+                name = prompt("Какие типы экранов нужно разработать?", "Простые, Сложные, Интерактивные" + i);
+            } while (appData.isNumber(name));
+            do {
+                price = +prompt("Сколько будет стоить данная работа?", "5000");
+            } while (!appData.isNumber(price));
+            appData.screens.push({
+                id: i,
+                name: name,
+                price: price
+            });
+        }
+        do {
+            let nameService;
+            let servicePrice;
+            do {
+                nameService = prompt("Какой дополнительный тип услуги нужен?", "Яндекс метрика " + i);
+            } while (appData.isNumber(nameService));
+            do {
+                servicePrice = prompt("Сколько это будет стоить?", '2000');
+            } while (!appData.isNumber(servicePrice));
+            appData.services[nameService + '' + i] = +servicePrice;
+            i++;
+        }
+        while (i < 2);
 
+    },
+    screenPriceMath: function () {
+        appData.screenPrice = appData.screens.reduce((sum, elem) => {
+            return sum += elem.price;
+        }, 0);
     },
     logger: function () {
         for (let key in appData) {
@@ -89,16 +113,9 @@ const appData = {
             }
             console.log(key + ' : ' + appData[key]);
         }
-    },
-    start: function () {
-        appData.asking();
-        appData.allServicePrices = appData.getAllServicePrices();
-        appData.fullPrice = appData.getFullPrice();
-        appData.servicePercentPrice = appData.getServicePercentPrices();
-        appData.title = appData.getTitle();
-        appData.logger();
+        console.log(appData.services);
+        console.log(appData.screens);
     }
-
 };
 
 appData.start();
