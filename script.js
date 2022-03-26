@@ -1,115 +1,55 @@
 'use strict';
 /*
 ОБЯЗАТЕЛЬНОЕ ЗАДАНИЕ:
-1) Переписать получение значения переменной screenPrice циклом do while.
- Вопрос должен задаваться один раз обязательно, далее уже по условию
-2) Добавить проверку что введённые данные являются числом, которые мы
- получаем на вопрос "Сколько это будет стоить" в функции getAllServicePrices
-3) Поправить проект так, чтоб расчеты велись верно. Проверить типы получаемых
- переменных и привести их к нужным.
-4) Проверить, чтобы все работало и не было ошибок в консоли.
-5) Добавить папку с уроком в свой репозиторий на GitHub
-УСЛОЖНЕННОЕ ЗАДАНИЕ №1:
-Придумать способ сохранять в переменную ответ пользователя после проверки
-на число именно как число при любом вводе. (с пробелами и без в переменную 
-заносилось именно число) На данный момент проверка isNumber пропустит такой вариант "
-123   " и именно это значение попадет в переменную. Необходимо это исправить. Так же
- учитывайте что человек может нажать отмену и в проверку уйдет значение NULL
+Для этого задания создайте отдельный репозиторий.
+Используйте функции alert, confirm, prompt для общения с пользователем.
+Написать игровой бот.
+"Загадывание случайного числа от 1 до 100"
+Что должна делать программа:
+— спрашивает пользователя: "Угадай число от 1 до 100".
+— если пользовательское число больше, то бот выводит "Загаданное число меньше"
+ и предлагает ввести новый вариант;
+— если пользовательское число меньше, то бот выводит "Загаданное число больше"
+ и предлагает ввести новый вариант;
+— если пользователь ввел не число, то выводит сообщение "Введи число!"
+ и предлагает ввести новый вариант;
+— если пользователь нажимает "Отмена", то игра заканчивается и выводится
+ сообщение "Игра окончена".
+— если пользовательское число равно загаданному, то игра заканчивается
+ и выводит сообщение "Поздравляю, Вы угадали!!!".
+Программа должны быть выполнена с помощью рекурсии, без единого цикла.
+Загаданное число должно храниться «в замыкании»
 */
-
-let title;
-let screens;
-let screenPrice;
-let adaptive;
-let rollback = 10;
-let allServicePrices;
-let fullPrice;
-let servicePercentPrice;
-let service1;
-let service2;
+let unknowVar = Math.round(Math.random() * 100);
 
 const isNumber = function (num) {
-    return !isNaN(parseFloat(num)) && isFinite(num);
+    return (!isNaN(parseFloat(num)) && isFinite(num));
 };
 
-const asking = function () {
-
-    title = prompt('Введите название проекта.', '  кальКУЛЯТОр верстки.');
-    screens = prompt("Какие типы экранов нужно разработать?", "Простые, Сложные, Интерактивные");
-    screenPrice = prompt("Сколько будет стоить данная работа?", "12000");
-    while (!isNumber(screenPrice)) {
-        screenPrice = prompt("Сколько будет стоить данная работа?", "12000");
-    }
-    screenPrice = Number(screenPrice);
-    adaptive = confirm("Нужен ли адаптив на сайте?");
-
-};
-
-const getAllServicePrices = function () {
-    let sum = 0;
-    let i = 0;
-    let servicePrice;
-    do {
-        if (i === 0) {
-            service1 = prompt("Какой дополнительный тип услуги нужен?", "Яндекс метрика");
-        } else if (i === 1) {
-            service2 = prompt("Какой дополнительный тип услуги нужен?", "Гугл метрика");
+const startGame = function (unknowVar) {
+    const newRound = function () {
+        let userVar = prompt('Угадай число от 1 до 100');
+        while (!isNumber(userVar)) {
+            if (userVar == null) {
+                return alert('игра окончена');
+            }
+            alert('Введите число!');
+            userVar = prompt('Угадай число от 1 до 100');
         }
-        servicePrice = prompt("Сколько это будет стоить?", '2000');
-        while (!isNumber(servicePrice)) {
-            servicePrice = prompt("Сколько это будет стоить?", '2000');
+        userVar = Number(userVar);
+        if (userVar === unknowVar) {
+            alert('Вы выиграли');
+            return 0;
+        } else if (userVar < unknowVar) {
+            alert('Загаданное число больше');
+            console.log();
+            newRound();
+        } else {
+            alert('Загаданное число меньше');
+            newRound();
         }
-        sum += Number(servicePrice);
-        i++;
-    }
-    while (i < 2);
-    return sum;
+    };
+    newRound();
 };
 
-const showTypeOf = function (variable) {
-    console.log(variable, typeof variable);
-};
-
-function getFullPrice() {
-    return screenPrice + allServicePrices;
-}
-
-const getRollbackMsg = function (price) {
-    if (price >= 30000) {
-        return 'Даем скидку в 10%';
-    } else if (price >= 15000) {
-        return 'Даем скидку в 5%';
-    } else if (price >= 0) {
-        return 'Скидка не предусмотрена';
-    } else {
-        return 'что то пошло не так';
-    }
-};
-
-
-const getTitle = function () {
-    title = title.trim().toLowerCase();
-    title = title[0].toUpperCase() + title.slice(1);
-    return title;
-};
-
-const getServicePercentPrices = function () {
-    return Math.round(fullPrice - (fullPrice * (rollback / 100)));
-};
-
-asking();
-allServicePrices = getAllServicePrices();
-fullPrice = getFullPrice();
-servicePercentPrice = getServicePercentPrices();
-title = getTitle();
-
-showTypeOf(title);
-showTypeOf(fullPrice);
-showTypeOf(adaptive);
-
-console.log(getRollbackMsg(fullPrice));
-console.log('Стоимость верстки экранов ' + screenPrice + ' рублей');
-console.log('Стоимость разработки сайта ' + fullPrice + ' рублей');
-console.log(screens.toLocaleLowerCase().split(', '));
-console.log('Процент отката посреднику за работу ' + fullPrice * (rollback / 100));
-console.log('Мой заработок ' + servicePercentPrice);
+startGame(unknowVar);
