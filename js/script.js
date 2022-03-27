@@ -32,6 +32,13 @@ const appData = {
     fullPrice: 0,
     servicePercentPrice: 0,
     services: {},
+    resetBtn: '',
+    startBtn: '',
+    plusBtn: '',
+    otherItemsPcnt: '',
+    otherItemsNmbr: '',
+    rollbackSpan: '',
+    inputCls: '',
     start: function () {
         appData.asking();
         appData.screenPriceMath();
@@ -40,6 +47,28 @@ const appData = {
         appData.getServicePercentPrices();
         appData.getTitle();
         appData.logger();
+    },
+    parse: function () {
+        appData.title = document.getElementsByTagName('h1')[0].outerText;
+        console.log(appData.title);
+        appData.startBtn = document.getElementsByClassName('handler_btn')[0];
+        console.log(appData.startBtn);
+        appData.resetBtn = document.getElementsByClassName('handler_btn')[1];
+        console.log(appData.resetBtn);
+        appData.plusBtn = document.querySelector('.screen-btn');
+        console.log(appData.plusBtn);
+        appData.otherItemsPcnt = document.querySelectorAll('.other-items.percent');
+        console.log(appData.otherItemsPcnt);
+        appData.otherItemsNmbr = document.querySelectorAll('.other-items.number');
+        console.log(appData.otherItemsNmbr);
+        appData.rollback = document.querySelector('.rollback>div>input');
+        console.log(appData.rollback);
+        appData.rollbackSpan = document.querySelector('.rollback>div>span');
+        console.log(appData.rollbackSpan);
+        appData.inputCls = document.getElementsByClassName('total-input');
+        console.log(appData.inputCls);
+        appData.screens = document.querySelectorAll('.screen');
+        console.log(appData.screens);
     },
     isNumber: function (num) {
         return !isNaN(parseFloat(num)) && isFinite(num);
@@ -125,4 +154,5 @@ const appData = {
     }
 };
 
-appData.start();
+//appData.start();
+appData.parse();
